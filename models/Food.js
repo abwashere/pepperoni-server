@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
 const foodSchema = new mongoose.Schema({
+	foodName: { type: String, required: true },
 	category: {
 		type: String,
-		enum: ["starter", "main", "desert"],
+		enum: ["antipasti", "principal", "dessert"],
 		required: true,
 	},
-	dishName: { type: String, required: true },
-	description: { type: String, required: true },
+	description: { type: String },
 	price: { type: Number, required: true },
 });
 
