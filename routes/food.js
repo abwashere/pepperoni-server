@@ -44,7 +44,7 @@ router.get("/:id", async function (req, res, next) {
 router.delete("/delete/:id", async function (req, res, next) {
 	try {
 		const food = await foodModel.findByIdAndRemove(req.params.id);
-		res.status(204).json(food);
+		res.status(200).send(food.foodName);
 	} catch (error) {
 		res.status(500).json(error);
 	}
@@ -59,7 +59,7 @@ router.patch("/edit/:id", async function (req, res, next) {
 			req.body,
 			{ new: true }
 		);
-		res.status(204).json(modifiedFood);
+		res.status(201).json(modifiedFood);
 	} catch (error) {
 		res.status(500).json(error);
 	}

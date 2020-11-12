@@ -8,7 +8,7 @@ const foodSchema = new mongoose.Schema({
 		required: true,
 	},
 	description: { type: String },
-	price: { type: Number, required: true },
+	price: { type: Number || String, required: true },
 });
 
 const Food = mongoose.model("Food", foodSchema);
