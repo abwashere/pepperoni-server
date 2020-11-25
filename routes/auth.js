@@ -1,5 +1,7 @@
 var express = require("express");
 var router = express.Router();
+const bcrypt = require("bcrypt");
+
 const userModel = require("../models/User");
 const util = require("./../utils/capitalizedName");
 
@@ -9,20 +11,18 @@ const util = require("./../utils/capitalizedName");
  * Sign up TODO: only admin can create users
  */
 router.post("/signup", async (req, res, next) => {
-	const newUser = req.body;
-	console.log(newUser);
 	try {
 		// 1. check if user already exists
-		const userInDB = await userModel.find(newUser.email);
+		const userInDB = await userModel.findOne({ email: req.body.email });
 
 		if (!userInDB) {
 			// 2. create new pseudo and formatted name
+			const newUser = req.body;
 			newUser.lastName = util.capitalizeWord(newUser.lastName);
 			newUser.firstName = util.capitalizeWord(newUser.firstName);
 			newUser.pseudo = (
 				newUser.firstName.slice(0, 2) + newUser.lastName.slice(0, 10)
-			).tolowercase();
-			console.log("NEW USER after pseudo ==>", newUser);
+			).toLowerCase();
 
 			// 3. create new user with hashed password
 			const salt = bcrypt.genSaltSync((saltRounds = 10));
@@ -31,18 +31,14 @@ router.post("/signup", async (req, res, next) => {
 			const newUserDocument = await userModel.create(newUser);
 
 			// 4. add user with no password in session
-			console.log("newUserDocument BEFORE to object", newUserDocument);
 			const createdUser = newUserDocument.toObject();
-			console.log("newUserDocument AFTER object", createdUser);
 			delete createdUser.password;
 			req.session.currentUser = createdUser;
 			res.status(201).json(createdUser);
 		} else {
 			// user already exists
-			// TODO: TRY : throw new Error ("Cet email est déjà pris. Veuillez recommencer.")
 			return res.status(400).json({
-				existingMail: req.body.email + " est déjà pris. Veuillez recommencer.",
-				newUser,
+				existingMail: `L'adresse ${req.body.email} est déjà prise. Veuillez recommencer.`,
 			});
 		}
 	} catch (error) {

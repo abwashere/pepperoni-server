@@ -7,6 +7,10 @@ var cors = require("cors");
 require("dotenv").config();
 require("./config/dbConnection");
 
+const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
+const mongoose = require("mongoose");
+
 var app = express();
 
 var corsOptions = {
@@ -20,6 +24,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use(
+	session({
+		store: new MongoStore({ mongooseConnection: mongoose.connection }), // Persist session in database.
+		secret: process.env.SESSION_SECRET,
+		resave: true,
+		saveUninitialized: true,
+	})
+);
+app.use(function (req, res, next) {
+	console.log("current user in session : ", req.session.currentUser);
+	next();
+});
 
 var indexRouter = require("./routes/index");
 var authRouter = require("./routes/auth");
