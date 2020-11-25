@@ -1,13 +1,12 @@
 require("./../config/dbConnection");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 // import models
 const foodModel = require("../models/Food");
 const userModel = require("../models/User");
 // import seeds
 const foodList = require("./foodSeeds");
 const usersList = require("./usersSeeds");
-// bcrypt for hashing
-const bcrypt = require("bcrypt");
 
 async function generateSeeds() {
 	mongoose.connection.dropDatabase();

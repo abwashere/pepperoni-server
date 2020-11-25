@@ -22,10 +22,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 var indexRouter = require("./routes/index");
+var authRouter = require("./routes/auth");
 var usersRouter = require("./routes/users");
 var foodRouter = require("./routes/food");
 
 app.use("/api", indexRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/food", foodRouter);
 
