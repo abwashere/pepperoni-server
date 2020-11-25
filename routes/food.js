@@ -13,7 +13,7 @@ router.get("/", async function (req, res, next) {
 		const allFood = await foodModel.find().sort("category foodName");
 		res.status(200).json(allFood);
 	} catch (error) {
-		res.status(500).json(error);
+		res.status(500).json({ error: err, message: "Error getting the menu" });
 	}
 });
 /**
@@ -24,7 +24,7 @@ router.post("/create", async function (req, res, next) {
 		const newFood = await foodModel.create(req.body);
 		res.status(201).json(newFood);
 	} catch (error) {
-		res.status(500).json(error);
+		res.status(500).json({ error: err, message: "Error creating meal" });
 	}
 });
 /**
@@ -35,7 +35,7 @@ router.get("/:id", async function (req, res, next) {
 		const food = await foodModel.findById(req.params.id);
 		res.status(200).json(food);
 	} catch (error) {
-		res.status(500).json(error);
+		res.status(500).json({ error: err, message: "Error getting one meal" });
 	}
 });
 /**
@@ -46,7 +46,7 @@ router.delete("/delete/:id", async function (req, res, next) {
 		const food = await foodModel.findByIdAndRemove(req.params.id);
 		res.status(200).send(food.foodName);
 	} catch (error) {
-		res.status(500).json(error);
+		res.status(500).json({ error: err, message: "Error deleting one meal" });
 	}
 });
 /**
@@ -61,7 +61,7 @@ router.patch("/edit/:id", async function (req, res, next) {
 		);
 		res.status(201).json(modifiedFood);
 	} catch (error) {
-		res.status(500).json(error);
+		res.status(500).json({ error: err, message: "Error editing a meal" });
 	}
 });
 module.exports = router;
