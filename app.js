@@ -10,6 +10,8 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 
+const devMode = true; // DEV MODE to change when needed
+
 /* Server app */
 var app = express();
 
@@ -28,28 +30,27 @@ app.use(cors(corsOptions));
 /* User Session */
 app.use(
 	session({
-		store: new MongoStore({ mongooseConnection: mongoose.connection }), // Persist session in database.
+		store: new MongoStore({ mongooseConnection: mongoose.connection }),
 		secret: process.env.SESSION_SECRET,
 		resave: true,
 		saveUninitialized: true,
 	})
 );
 
-app.use(function (req, res, next) {
-	console.log(
-		"=================\nCurrent user in session : ",
-		req.session.currentUser,
-		"================="
-	);
-	next();
-});
-
 /* Dev mode */
-const devMode = true; // DEV MODE to change when needed
-
 if (devMode === true) {
 	app.use(require("./middlewares/devMode"));
 }
+
+/* User in session tracking */
+app.use(function (req, res, next) {
+	console.log(
+		"=============\nCurrent user in session :",
+		req.session.currentUser,
+		"============="
+	);
+	next();
+});
 
 /* Routing */
 var indexRouter = require("./routes/index");

@@ -34,11 +34,14 @@ router.post("/signup", async (req, res, next) => {
 			const createdUser = newUserDocument.toObject();
 			delete createdUser.password;
 			req.session.currentUser = createdUser;
-			res.status(201).json(createdUser);
+			res.status(201).json({
+				user: req.session.currentUser,
+				successMessage: "Enregistrement réussie",
+			});
 		} else {
 			// user already exists
 			return res.status(400).json({
-				existingMail: `L'adresse ${req.body.email} est déjà prise. Veuillez recommencer.`,
+				invalidCredentials: `L'adresse ${req.body.email} est déjà prise. Veuillez recommencer.`,
 			});
 		}
 	} catch (error) {
@@ -50,23 +53,36 @@ router.post("/signup", async (req, res, next) => {
  * Log in
  */
 router.post("/login", async (req, res) => {
+	console.log("here!");
 	try {
 		// 1. check pseudo email
-		const userInDB = await userModel.find(req.body.pseudo || req.body.email);
+		// const userInDB = await userModel.find(req.body.pseudo || req.body.email);
+		const userInDB = await userModel.findOne({ pseudo: req.body.pseudo });
 		if (userInDB) {
 			// 2. check password
-			const validPassword = compareSync(req.body.password, userInDB.password);
+			const validPassword = bcrypt.compareSync(
+				req.body.password,
+				userInDB.password
+			);
+			console.log("valid password?", validPassword);
 			if (validPassword) {
-				req.session.currentUser = userInDB(-password);
+				const user = userInDB.toObject();
+				delete user.password;
+				req.session.currentUser = user;
 				res.status(200).json({
-					loggedUser: req.session.currentUser,
-					message: "Connexion réussie",
+					user: req.session.currentUser,
+					successMessage: "Connexion réussie",
 				});
+				console.log("current user", req.session.currentUser);
 			} else {
-				return res.status(400).json({ message: "Mot de passe erroné." });
+				return res
+					.status(400)
+					.json({ invalidCredentials: "Mot de passe erroné." });
 			}
 		} else {
-			return res.status(400).json({ message: "Identifiant invalide." });
+			return res
+				.status(400)
+				.json({ invalidCredentials: "Identifiant invalide." });
 		}
 	} catch (error) {
 		res.status(500).json(error);
@@ -78,9 +94,9 @@ router.post("/login", async (req, res) => {
  */
 router.get("/isLoggedIn", (req, res) => {
 	if (req.session.currentUser) {
-		res.status(200).json(req.session.currentUser);
+		res.status(200).json({ user: req.session.currentUser });
 	} else {
-		res.status(401).json({ message: "Unauthorized" });
+		res.status(401).json({ warningMessage: "Unauthorized" });
 	}
 });
 
@@ -93,7 +109,10 @@ router.get("/logout", (req, res) => {
 			res
 				.status(500)
 				.json({ error, message: "Error trying to disconnect user" });
-		else res.status(200).json({ message: "User successfully disconnected." });
+		else
+			res
+				.status(200)
+				.json({ successMessage: "User successfully disconnected." });
 	});
 });
 
