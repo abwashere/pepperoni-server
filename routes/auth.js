@@ -3,7 +3,7 @@ var router = express.Router();
 const bcrypt = require("bcrypt");
 
 const userModel = require("../models/User");
-const util = require("./../utils/capitalizedName");
+const func = require("./../utils/capitalizedName");
 
 // ==> /api/auth
 
@@ -18,8 +18,8 @@ router.post("/signup", async (req, res, next) => {
 		if (!userInDB) {
 			// 2. create new pseudo and formatted name
 			const newUser = req.body;
-			newUser.lastName = util.capitalizeWord(newUser.lastName);
-			newUser.firstName = util.capitalizeWord(newUser.firstName);
+			newUser.lastName = func.capitalizeWord(newUser.lastName);
+			newUser.firstName = func.capitalizeWord(newUser.firstName);
 			newUser.pseudo = (
 				newUser.firstName.slice(0, 2) + newUser.lastName.slice(0, 10)
 			).toLowerCase();
