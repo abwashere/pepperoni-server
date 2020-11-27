@@ -54,9 +54,9 @@ router.post("/signup", async (req, res, next) => {
  */
 router.post("/login", async (req, res) => {
 	try {
-		// 1. check pseudo email
-		// const userInDB = await userModel.find(req.body.pseudo || req.body.email);
+		// 1. check pseudo (or email)
 		const userInDB = await userModel.findOne({ pseudo: req.body.pseudo });
+		// const userInDB = await userModel.find(req.body.pseudo || req.body.email);
 		if (userInDB) {
 			// 2. check password
 			const validPassword = bcrypt.compareSync(
@@ -71,7 +71,7 @@ router.post("/login", async (req, res) => {
 					user: req.session.currentUser,
 					successMessage: `Connexion réussie. Buongiorno ${req.session.currentUser.firstName} !`,
 				});
-				console.log("current user", req.session.currentUser);
+				console.log("Logged in : ", req.session.currentUser.firstName);
 			} else {
 				res.status(400).json({ invalidCredentials: "Mot de passe erroné." });
 			}
