@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 
-const devMode = true; // DEV MODE to change when needed
+const devMode = false; // DEV MODE to change when needed
 
 /* Server app */
 var app = express();
