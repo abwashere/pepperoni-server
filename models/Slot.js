@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 const tableSchema = require("./Table");
 
 const slotSchema = new mongoose.Schema({
-	day: { type: Date, required: true },
-	hour: { type: String, required: true },
+	date: { type: Date, required: true },
+	// day: { type: Date, required: true },
+	// hour: { type: String, required: true },
 	tables: [tableSchema],
 });
 

@@ -13,13 +13,13 @@ const MongoStore = require("connect-mongo")(session);
 /* Server app */
 var app = express();
 
+/* Middlewares */
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cookieParser());
 
-/* Front end permission */
 var corsOptions = {
 	origin: process.env.CLIENT_URL,
 	credentials: true,
@@ -35,9 +35,9 @@ app.use(
 		store: new MongoStore({
 			mongooseConnection: mongoose.connection,
 			touchAfter: 12 * 3600, // session is updated only one time in 12 hours, no matter how many requests are made (except those that change something on the session data)
-			ttl: 01 * 24 * 60 * 60, // session expiration = 1 days
+			ttl: 01 * 24 * 60 * 60, // in hours, session expiration = 1 days
 		}),
-		cookie: { secure: true, maxAge: 1800000 }, // user connection = 30 minutes
+		cookie: { httpOnly: true, maxAge: 1000 * 60 * 30 * 1 }, // in msec, user connection = 30 minutes
 	})
 );
 
@@ -63,10 +63,12 @@ var indexRouter = require("./routes/index");
 var authRouter = require("./routes/auth");
 var usersRouter = require("./routes/users");
 var foodRouter = require("./routes/food");
+var tablesRouter = require("./routes/tables");
 
 app.use("/api", indexRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/food", foodRouter);
+app.use("/api/tables", tablesRouter);
 
 module.exports = app;
