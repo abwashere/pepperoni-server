@@ -1,6 +1,5 @@
 require("./../config/dbConnection");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 // import models
 const foodModel = require("../models/Food");
 const userModel = require("../models/User");
@@ -12,15 +11,10 @@ async function generateSeeds() {
 	mongoose.connection.dropDatabase();
 
 	try {
-		// Create meals from foodList
+		// Create meals
 		const allFoods = await foodModel.create(foodList);
 
-		// Create users from usersList
-		usersList.forEach((user) => {
-			const salt = bcrypt.genSaltSync((saltRounds = 10));
-			const hash = bcrypt.hashSync(user.password, salt);
-			user.password = hash;
-		});
+		// Create users
 		const allUsers = await userModel.create(usersList);
 
 		//

@@ -31,22 +31,22 @@ const userSchema = new mongoose.Schema({
 	pseudo: { type: String, lowercase: true },
 });
 
-/* Mongoose Hook */
-userSchema.pre("save", async function (next) {
-	// hash password
-	const salt = await bcrypt.genSalt(10);
-	this.password = await bcrypt.hash(this.password, salt);
+/* Mongoose hook for hashing password */
+userSchema.pre("save", function (next) {
+	//
+	const salt = bcrypt.genSaltSync((saltRounds = 10));
+	this.password = bcrypt.hashSync(this.password, salt);
 
 	next();
 });
 
-// static method to log in user
+/* Static method to log in user */
 userSchema.statics.login = async function (pseudo, password) {
 	// 1. check pseudo
 	const userInDB = await this.findOne({ pseudo });
 	if (userInDB) {
 		// 2. check password
-		const validPassword = bcrypt.compareSync(password, userInDB.password);
+		const validPassword = await bcrypt.compare(password, userInDB.password);
 		if (validPassword) {
 			const user = userInDB.toObject();
 			delete user.password;

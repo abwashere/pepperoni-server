@@ -4,6 +4,8 @@ const userModel = require("../models/User");
 
 // ==> /api/users
 
+//TODO: REQUIRE AUTH
+
 /**
  * Get all users
  */

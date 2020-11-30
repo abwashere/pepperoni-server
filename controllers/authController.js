@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const userModel = require("../models/User");
 const jwt = require("jsonwebtoken");
 const func = require("./../utils/capitalizedName");
@@ -38,16 +40,16 @@ const handleErrors = (err) => {
 };
 
 /* Json Web Token */
-const maxAge = 3 * 24 * 60 * 60;
-const createToken = (id) => {
-	return jwt.sign({ id }, "xxx audwey vewy secret !& 987551564", {
+const maxAge = 1 * 1 * 30 * 60; // 30 minutes
+const createToken = (user) => {
+	return jwt.sign(user, process.env.SESSION_SECRET, {
 		expiresIn: maxAge,
 	});
 };
 
 /* Controllers */
 
-module.exports.post_signup = async (req, res, next) => {
+module.exports.post_signup = async (req, res) => {
 	const newUser = req.body;
 	try {
 		// Format name
@@ -59,18 +61,13 @@ module.exports.post_signup = async (req, res, next) => {
 			newUser.firstName.slice(0, 2) + newUser.lastName.slice(0, 9)
 		).toLowerCase();
 		const pseudoInDb = await userModel.findOne({ pseudo: newUser.pseudo });
-		console.log(newUser.pseudo + " ========already exist in db");
+
 		if (pseudoInDb)
 			newUser.pseudo = newUser.pseudo + calc.getRandomInt(100).toString();
 
-		const newUserDocument = await userModel.create(newUser);
-
-		// Add user with no password in session
-		const user = newUserDocument.toObject();
-		delete user.password;
+		const user = await userModel.create(newUser);
 
 		res.status(201).json({
-			user,
 			successMessage: `${user.firstName} ${user.lastName} a bien été ajouté au staff.`,
 		});
 	} catch (err) {
@@ -84,37 +81,37 @@ module.exports.post_login = async (req, res) => {
 	try {
 		const user = await userModel.login(pseudo, password);
 
-		const token = createToken(user._id);
-		res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+		const token = createToken(user);
 
-		res.status(200).json({
-			user,
-			successMessage: `Connexion réussie. Buongiorno ${user.firstName} !`,
-		});
-
-		req.session.currentUser = user; //FIXME:
-		console.log("Logged in : ", user.firstName);
+		return res
+			.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 })
+			.status(200)
+			.json({
+				token,
+				successMessage: `Connexion réussie. Buongiorno ${user.firstName} !`,
+			});
 	} catch (err) {
 		const errors = handleErrors(err);
 		res.status(401).json({ errors });
 	}
 };
 
+//TODO: KEEP ???
 module.exports.get_isLoggedIn = (req, res) => {
-	if (req.session.currentUser) {
-		res
+	if (res.locals.currentUser) {
+		console.log("isLoggedIn route found res.locals.currentUser");
+		return res
 			.status(200)
-			.json({ isLoggedIn: true, loggedUserId: req.session.currentUser._id });
+			.json({ isLoggedIn: true, loggedUserId: res.locals.currentUser._id });
 	} else {
-		res.status(401).json({ errors: "Unauthorized" });
+		return res.status(401).json({ errors: "Unauthorized" });
 	}
 };
 
 module.exports.get_logout = (req, res) => {
-	req.session.destroy(function (error) {
-		if (error)
-			res.status(500).json({ errors: "Error trying to disconnect user" });
-		else
-			res.status(200).json({ successMessage: "Vous n'êtes plus connecté(e)." });
-	});
+	//TODO: KEEP ??
+	res.cookie("jwt", "", { maxAge: 1 });
+	return res
+		.status(200)
+		.json({ successMessage: "Vous n'êtes plus connecté(e)." });
 };
