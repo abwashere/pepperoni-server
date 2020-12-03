@@ -8,7 +8,7 @@ router.post("/signup", authController.post_signup);
 
 router.post("/login", authController.post_login);
 
-router.get("/isLoggedIn", authController.get_isLoggedIn);
+router.get("/isLoggedIn/:userID", authController.get_isLoggedIn);
 
 router.get("/logout", authController.get_logout);
 

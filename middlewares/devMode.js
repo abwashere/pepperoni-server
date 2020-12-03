@@ -6,6 +6,8 @@ module.exports = function devMode(req, res, next) {
 		lastName: "Belson",
 		pseudo: "aubelson",
 		email: "audrey@pepperoni.com",
+		type: "devMode",
 	};
+	req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // 24 h
 	next();
 };

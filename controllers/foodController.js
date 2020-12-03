@@ -1,6 +1,7 @@
 const foodModel = require("../models/Food");
 
-/* Errors handler */
+/* TODO: Errors handler */
+
 const handleErrors = (err) => {
 	console.log("err message & err code : ", err.message, err.code);
 	let errors = {};
