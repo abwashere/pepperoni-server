@@ -6,7 +6,6 @@ const calc = require("./../utils/getRandomInt");
 /* Errors handler */
 const handleErrors = (err) => {
 	console.log("err : ", err);
-	// console.log("err message: ", err.message, "err code : ", err.code);
 	let errors = {};
 
 	// login - incorrect pseudo
@@ -31,8 +30,6 @@ const handleErrors = (err) => {
 			errors[properties.path] = properties.message;
 		});
 	}
-
-	console.log("ERROR MESSAGES FOR USER ----->", errors);
 
 	return errors;
 };
@@ -62,7 +59,7 @@ module.exports.post_signup = async (req, res) => {
 		});
 	} catch (err) {
 		const errors = handleErrors(err);
-		res.status(400).json({ invalidCredentials: errors });
+		res.status(400).json({ errors });
 	}
 };
 
@@ -72,10 +69,7 @@ module.exports.post_login = async (req, res) => {
 		const user = await userModel.login(pseudo, password);
 
 		req.session.currentUser = user;
-		console.log(
-			"HERE WE GO !!! just logged in === ",
-			req.session.currentUser.firstName
-		);
+		console.log("JUST LOGGED IN === ", req.session.currentUser.firstName);
 
 		return res.status(200).json({
 			cookie: req.session.cookie,

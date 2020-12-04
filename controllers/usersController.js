@@ -1,23 +1,18 @@
 const userModel = require("../models/User");
 
-/* TODO: Errors handler */
+/* Errors handler */
 
 const handleErrors = (err) => {
-	console.log("err message & err code : ", err.message, err.code);
 	let errors = {};
 
-	// login - incorrect pseudo
-	// if (err.message === "incorrect pseudo") {
-	// 	errors.pseudo = "Identifiant invalide";
-	// }
-
-	// create food - validation errors
-	if (err.message.includes("food validation failed")) {
-		console.log("food validation failed-------------->", err);
+	// create user - validation errors
+	if (err._message?.includes("User validation failed")) {
 		Object.values(err.errors).forEach(({ properties }) => {
-			errors.properties.path = properties.message;
+			errors[properties.path] = properties.message;
 		});
 	}
+	console.log("errors :::", errors);
+	return errors;
 };
 
 /* Controllers */
@@ -26,10 +21,9 @@ module.exports.get_allUsers = async function (req, res, next) {
 	try {
 		const allUsers = await userModel.find().sort("privileges lastName");
 		res.status(200).json(allUsers);
-	} catch (error) {
-		res
-			.status(500)
-			.json({ error: err, message: "Error getting the users list" });
+	} catch (err) {
+		const errors = handleErrors(err);
+		res.status(401).json({ errors });
 	}
 };
 
@@ -37,8 +31,9 @@ module.exports.get_user = async function (req, res, next) {
 	try {
 		const user = await userModel.findById(req.params.id);
 		res.status(200).json(user);
-	} catch (error) {
-		res.status(500).json({ error: err, message: "Error getting one user" });
+	} catch (err) {
+		const errors = handleErrors(err);
+		res.status(401).json({ errors });
 	}
 };
 
@@ -46,8 +41,9 @@ module.exports.delete_user = async function (req, res, next) {
 	try {
 		const user = await userModel.findByIdAndRemove(req.params.id);
 		res.status(200).send(user.userName);
-	} catch (error) {
-		res.status(500).json({ error: err, message: "Error deleting one user" });
+	} catch (err) {
+		const errors = handleErrors(err);
+		res.status(401).json({ errors });
 	}
 };
 
@@ -59,7 +55,8 @@ module.exports.patch_user = async function (req, res, next) {
 			{ new: true }
 		);
 		res.status(201).json(modifiedUser);
-	} catch (error) {
-		res.status(500).json({ error: err, message: "Error editing the user" });
+	} catch (err) {
+		const errors = handleErrors(err);
+		res.status(401).json({ errors });
 	}
 };
