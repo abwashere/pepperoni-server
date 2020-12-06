@@ -23,6 +23,15 @@ const handleErrors = (err) => {
 		errors.email = "Cet email est déjà pris. Veuillez recommencer.";
 		return errors;
 	}
+	// signup - incorrect password formats
+	if (err.message === "incorrect password length") {
+		errors.password =
+			"Le mot de passe doit contenir au moins 6 caractères dont 1 lettre et 1 chiffre";
+	}
+	if (err.message === "incorrect password string") {
+		errors.password =
+			"Le mot de passe doit contenir au moins 1 lettre et 1 chiffre.";
+	}
 
 	// signup - validation errors
 	if (err._message?.includes("User validation failed")) {
@@ -30,6 +39,8 @@ const handleErrors = (err) => {
 			errors[properties.path] = properties.message;
 		});
 	}
+
+	console.log("all errors :::", errors);
 
 	return errors;
 };
@@ -43,17 +54,18 @@ module.exports.post_signup = async (req, res) => {
 		newUser.lastName = func.capitalizeWord(newUser.lastName);
 		newUser.firstName = func.capitalizeWord(newUser.firstName);
 
-		// Check if pseudo already exist
+		// Create pseudo
 		newUser.pseudo = (
 			newUser.firstName.slice(0, 2) + newUser.lastName.slice(0, 9)
 		).toLowerCase();
+		// Check if pseudo already exists
 		const pseudoInDb = await userModel.findOne({ pseudo: newUser.pseudo });
-
+		// ... and modify if needed
 		if (pseudoInDb)
 			newUser.pseudo = newUser.pseudo + calc.getRandomInt(100).toString();
 
+		// Save new user
 		const user = await userModel.create(newUser);
-
 		res.status(201).json({
 			successMessage: `${user.firstName} ${user.lastName} a bien été ajouté au staff.`,
 		});

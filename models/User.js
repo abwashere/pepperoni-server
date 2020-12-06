@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { isEmail } = require("validator");
+const { isEmail, isNumeric, isAlpha } = require("validator");
 const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
@@ -18,7 +18,6 @@ const userSchema = new mongoose.Schema({
 	password: {
 		type: String,
 		required: [true, "Merci de renseigner tous les champs."],
-		minLength: [6, "Le mot de passe doit contenir au moins 6 caractères."],
 	},
 	firstName: {
 		type: String,
@@ -33,7 +32,11 @@ const userSchema = new mongoose.Schema({
 
 /* Mongoose hook for hashing password */
 userSchema.pre("save", function (next) {
-	//
+	// password format check
+	if (this.password.length < 6) throw Error("incorrect password length");
+	if (isNumeric(this.password) || isAlpha(this.password))
+		throw Error("incorrect password string");
+	// password hashing
 	const salt = bcrypt.genSaltSync((saltRounds = 10));
 	this.password = bcrypt.hashSync(this.password, salt);
 
