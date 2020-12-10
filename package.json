@@ -6,6 +6,7 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "db": "sudo service mongodb start",
+    "tables": "node ./data/generateTables.js",
     "seeds": "node ./data/generateSeeds.js"
   },
   "dependencies": {

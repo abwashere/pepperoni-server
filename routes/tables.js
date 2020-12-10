@@ -4,14 +4,9 @@ const tablesController = require("./../controllers/tablesController");
 
 // ==> /api/tables
 
-/**
- * Check table availability
- */
-router.get("/availability", tablesController.availability);
-
-/**
- * Book a table
- */
-// router.get("/book/:slot_id", tablesController.book);
+router.get("/", tablesController.get_tables);
+router.get("/slot_:id", tablesController.get_slot);
+router.post("/availability", tablesController.post_availabilityCheck);
+router.post("/reservation", tablesController.post_reservation);
 
 module.exports = router;

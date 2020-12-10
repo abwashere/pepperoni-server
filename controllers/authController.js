@@ -1,4 +1,3 @@
-require("dotenv").config();
 const userModel = require("../models/User");
 const func = require("./../utils/capitalizedName");
 const calc = require("./../utils/getRandomInt");

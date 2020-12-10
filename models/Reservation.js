@@ -6,7 +6,7 @@ const reservationSchema = new mongoose.Schema({
 	clientEmail: { type: String },
 });
 
-// const Reservation = mongoose.model("Reservation", reservationSchema);
+const Reservation = mongoose.model("Reservation", reservationSchema);
 
-// module.exports = Reservation;
-module.exports = reservationSchema;
+module.exports.model = Reservation;
+module.exports.schema = reservationSchema;
