@@ -1,41 +1,39 @@
 const allTables = require("./../data/_tablesSeeds");
+const reservationModel = require("../models/Reservation").model;
 const tableModel = require("../models/Table").model;
 const slotModel = require("../models/Slot").model;
 const capitalize = require("./../utils/capitalizedName").capitalizeWord;
 
-/* TODO: Errors handler */
-/* 
+/* Errors handler */
 const handleErrors = (err) => {
-	console.log("err : ", err);
+	console.log("err !!! ====> ", err.message);
 	let errors = {};
 
-	// login - incorrect pseudo
-	if (err.message === "incorrect pseudo") {
-		errors.pseudo = "Identifiant invalide";
+	// availability
+	if (err.message === "no tables available") {
+		errors.unavailability =
+			"Pas de tables disponibles sur ce créneau. Choisissez une autre plage horaire ou une autre date.";
+	}
+	// something is missing
+	if (err.reason?.code === "ERR_ASSERTION") {
+		errors[err.path] = "Données non valides.";
+	}
+	if (err.message === "missing clientName field") {
+		errors.clientName = "Veuillez renseigner un nom.";
+	}
+	if (err.message === "missing clientPhone field") {
+		errors.clientPhone = "Veuillez renseigner un numéro de téléphone.";
+	}
+	// format error
+	if (err.message === "invalid phone number") {
+		errors.clientPhone = "Numéro invalide.";
+	}
+	if (err.message === "invalid email") {
+		errors.clientEmail = "Email invalide.";
 	}
 
-	// login - incorrect password
-	if (err.message === "incorrect password") {
-		errors.password = "Mot de passe incorrect";
-	}
-
-	// signup - duplicate email error
-	if (err.code === 11000 && err.keyValue.email !== null) {
-		errors.email = "Cet email est déjà pris. Veuillez recommencer.";
-		return errors;
-	}
-	// signup - incorrect password formats
-	if (err.message === "incorrect password length") {
-		errors.password =
-			"Le mot de passe doit contenir au moins 6 caractères dont 1 lettre et 1 chiffre";
-	}
-	if (err.message === "incorrect password string") {
-		errors.password =
-			"Le mot de passe doit contenir au moins 1 lettre et 1 chiffre.";
-	}
-
-	// signup - validation errors
-	if (err._message?.includes("User validation failed")) {
+	// validation errors
+	if (err._message?.includes("validation failed")) {
 		Object.values(err.errors).forEach(({ properties }) => {
 			errors[properties.path] = properties.message;
 		});
@@ -45,34 +43,9 @@ const handleErrors = (err) => {
 
 	return errors;
 };
- */
-
-module.exports.get_slot = async function (req, res, next) {
-	console.log("getting slot :::", req.params.id);
-	try {
-		const slot = await slotModel.findById(req.params.id);
-		if (slot) return res.status(200).json(slot);
-		else return res.status(401).send("the slot has not been documented yet");
-	} catch (error) {
-		console.log("get slot error !!!\n===>", error);
-		return res.status(401).json({ error });
-	}
-};
-
-module.exports.get_tables = async function (req, res, next) {
-	console.log("getting tables list");
-	try {
-		const tables = await tableModel.find().sort("tableNum");
-		if (tables.length) return res.status(200).json(tables);
-	} catch (error) {
-		console.log("tables list error !!!\n===>", error);
-		return res.status(401).json({ error });
-	}
-};
 
 module.exports.post_availabilityCheck = async function (req, res, next) {
-	console.log("Checking the availability of :::", req.body);
-	const requestedDate = new Date(req.body.date);
+	const requestedDate = req.body.date;
 	const requestedTime = req.body.time;
 
 	try {
@@ -82,23 +55,20 @@ module.exports.post_availabilityCheck = async function (req, res, next) {
 		});
 		if (slot.length) {
 			// a document already exist for the requested date
-			console.log("Slot already exists");
 			res.status(200).json({ message: "Slot already exists", slot });
 		} else {
 			// no existing document for the requested date => create it
-			console.log("Slot does not exists. Trying to create it...");
 			const requestedSlot = {
 				date: requestedDate,
 				time: requestedTime,
 				tables: allTables,
 			};
-
 			const newSlot = await slotModel.create(requestedSlot);
 			res.status(200).json({ message: "New slot created", slot: newSlot });
 		}
 	} catch (error) {
-		console.log("availabilityCheck error !!!\n===>", error);
-		res.status(401).json({ error });
+		const errors = handleErrors(error);
+		res.status(400).json({ errors });
 	}
 };
 
@@ -107,6 +77,9 @@ module.exports.post_reservation = async function (req, res, next) {
 	const { slotID, seats, client } = req.body;
 
 	try {
+		// Validation check
+		await reservationModel.checkFormat(client);
+
 		// Find the selected slot
 		const slot = await slotModel.findById(slotID);
 
@@ -144,11 +117,33 @@ module.exports.post_reservation = async function (req, res, next) {
 				slot: updatedSlot,
 			});
 		} else {
-			// There is no table of such capacity or the table is unavailable :
-			res.status(200).json({ message: "No tables available." }); // TODO: THROW ERROR FOR ERROR HANDLER
+			throw Error("no tables available");
 		}
 	} catch (error) {
-		console.log("reservation error !!!\n===>", error);
-		res.status(401).json({ error });
+		const errors = handleErrors(error);
+		res.status(400).json({ originalError: error, errors });
+	}
+};
+
+module.exports.get_slot = async function (req, res, next) {
+	console.log("getting slot :::", req.params.id);
+	try {
+		const slot = await slotModel.findById(req.params.id);
+		if (slot) return res.status(200).json(slot);
+		else return res.status(401).send("the slot has not been documented yet");
+	} catch (error) {
+		console.log("get slot error !!!\n===>", error);
+		return res.status(401).json({ error });
+	}
+};
+
+module.exports.get_tables = async function (req, res, next) {
+	console.log("getting tables list");
+	try {
+		const tables = await tableModel.find().sort("tableNum");
+		if (tables.length) return res.status(200).json(tables);
+	} catch (error) {
+		console.log("tables list error !!!\n===>", error);
+		return res.status(401).json({ error });
 	}
 };
