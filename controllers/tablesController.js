@@ -121,7 +121,78 @@ module.exports.post_reservation = async function (req, res, next) {
 		}
 	} catch (error) {
 		const errors = handleErrors(error);
-		res.status(400).json({ originalError: error, errors });
+		res.status(400).json({ errors });
+	}
+};
+
+module.exports.get_reservations = async function (req, res, next) {
+	try {
+		const reservations = await slotModel
+			.find()
+			.populate("reservation")
+			.sort("date");
+		if (reservations.length) {
+			reservations.map(
+				(reservation) =>
+					(reservation.tables = reservation.tables.filter(
+						(table) => !table.isAvailable
+					))
+			);
+			const bookedTables = reservations.filter(
+				(reservation) => !!reservation.tables.length
+			);
+			if (bookedTables.length) res.status(200).json({ bookedTables });
+			else
+				return res
+					.status(401)
+					.json({ message: "Aucune réservation dans les 2 prochains mois." });
+		} else {
+			return res
+				.status(401)
+				.json({ message: "Aucune réservation dans les 2 prochains mois." });
+		}
+	} catch (error) {
+		const errors = handleErrors(error);
+		res.status(400).json({ errors });
+	}
+};
+
+module.exports.patch_cancelation = async function (req, res, next) {
+	const { slotID, tableID } = req.body;
+
+	try {
+		// Find the slot
+		const slot = await slotModel.findById(slotID);
+
+		// Find the table to cancel and update it
+		const modifiedTables = slot.tables.map((table) => {
+			if (table._id.toString() === tableID) {
+				table.isAvailable = true;
+				table.reservation = [];
+				return table;
+			} else {
+				return table;
+			}
+		});
+
+		const ind = modifiedTables.findIndex(
+			(table) => table._id.toString() === tableID
+		);
+		const day = slot.date.toLocaleString("fr-FR").slice(0, 10);
+
+		// Update slot
+		const modifiedSlot = await slotModel
+			.findByIdAndUpdate(slotID, { tables: modifiedTables }, { new: true })
+			.populate("reservation");
+
+		res.status(201).json({
+			message: `Table ${modifiedTables[ind].tableNum} : La réservation du ${day} à ${slot.time} a bien été annulée.`,
+			reservation: modifiedTables[ind],
+			modifiedSlot,
+		});
+	} catch (error) {
+		const errors = handleErrors(error);
+		res.status(400).json({ errors });
 	}
 };
 
@@ -132,8 +203,8 @@ module.exports.get_slot = async function (req, res, next) {
 		if (slot) return res.status(200).json(slot);
 		else return res.status(401).send("the slot has not been documented yet");
 	} catch (error) {
-		console.log("get slot error !!!\n===>", error);
-		return res.status(401).json({ error });
+		const errors = handleErrors(error);
+		res.status(400).json({ errors });
 	}
 };
 

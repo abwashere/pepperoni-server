@@ -3,13 +3,13 @@
     {
       "tableNum": 1,
       "tableName": "Table 1",
-      "capacity": 3,
+      "capacity": 5,
       "isAvailable": true
     },
     {
       "tableNum": 2,
       "tableName": "Table 2",
-      "capacity": 7,
+      "capacity": 10,
       "isAvailable": true
     },
     {
@@ -21,13 +21,13 @@
     {
       "tableNum": 4,
       "tableName": "Table 4",
-      "capacity": 4,
+      "capacity": 5,
       "isAvailable": true
     },
     {
       "tableNum": 5,
       "tableName": "Table 5",
-      "capacity": 5,
+      "capacity": 3,
       "isAvailable": true
     },
     {
@@ -39,25 +39,37 @@
     {
       "tableNum": 7,
       "tableName": "Table 7",
-      "capacity": 7,
+      "capacity": 6,
       "isAvailable": true
     },
     {
       "tableNum": 8,
       "tableName": "Table 8",
-      "capacity": 7,
+      "capacity": 6,
       "isAvailable": true
     },
     {
       "tableNum": 9,
       "tableName": "Table 9",
-      "capacity": 2,
+      "capacity": 3,
       "isAvailable": true
     },
     {
       "tableNum": 10,
       "tableName": "Table 10",
-      "capacity": 5,
+      "capacity": 4,
+      "isAvailable": true
+    },
+    {
+      "tableNum": 11,
+      "tableName": "Table 11",
+      "capacity": 2,
+      "isAvailable": true
+    },
+    {
+      "tableNum": 12,
+      "tableName": "Table 12",
+      "capacity": 9,
       "isAvailable": true
     }
   ]

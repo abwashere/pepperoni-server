@@ -41,7 +41,7 @@ if (devMode === true) app.use(require("./middlewares/devMode"));
 /* User in session tracking */
 app.use(function (req, res, next) {
 	console.log("=========Session user :", req.session.currentUser?.firstName);
-	console.log("=========Session ID :", req.sessionID);
+	// console.log("=========Session ID :", req.sessionID);
 	next();
 });
 
