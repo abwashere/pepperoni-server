@@ -23,7 +23,7 @@ reservationSchema.statics.checkFormat = async function ({
 	clientPhone,
 	clientEmail,
 }) {
-	if (!clientName.length) throw Error("missing clientName field");
+	if (clientName.length < 6) throw Error("invalid clientName field");
 	if (!clientPhone.length) throw Error("missing clientPhone field");
 	if (!isMobilePhone(clientPhone) || !isFrenchPhone(clientPhone))
 		throw Error("invalid phone number");

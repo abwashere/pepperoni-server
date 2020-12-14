@@ -18,8 +18,8 @@ const handleErrors = (err) => {
 	if (err.reason?.code === "ERR_ASSERTION") {
 		errors[err.path] = "Données non valides.";
 	}
-	if (err.message === "missing clientName field") {
-		errors.clientName = "Veuillez renseigner un nom.";
+	if (err.message === "invalid clientName field") {
+		errors.clientName = "Veuillez renseigner un nom valide.";
 	}
 	if (err.message === "missing clientPhone field") {
 		errors.clientPhone = "Veuillez renseigner un numéro de téléphone.";
@@ -44,9 +44,8 @@ const handleErrors = (err) => {
 	return errors;
 };
 
-module.exports.post_availabilityCheck = async function (req, res, next) {
-	const requestedDate = req.body.date;
-	const requestedTime = req.body.time;
+module.exports.post_slot = async function (req, res, next) {
+	const { requestedDate, requestedTime } = req.body;
 
 	try {
 		const slot = await slotModel.find({
@@ -55,7 +54,7 @@ module.exports.post_availabilityCheck = async function (req, res, next) {
 		});
 		if (slot.length) {
 			// a document already exist for the requested date
-			res.status(200).json({ message: "Slot already exists", slot });
+			res.status(200).json({ slot });
 		} else {
 			// no existing document for the requested date => create it
 			const requestedSlot = {
@@ -64,7 +63,7 @@ module.exports.post_availabilityCheck = async function (req, res, next) {
 				tables: allTables,
 			};
 			const newSlot = await slotModel.create(requestedSlot);
-			res.status(200).json({ message: "New slot created", slot: newSlot });
+			res.status(200).json({ slot: newSlot });
 		}
 	} catch (error) {
 		const errors = handleErrors(error);
@@ -111,9 +110,10 @@ module.exports.post_reservation = async function (req, res, next) {
 				.findByIdAndUpdate(slotID, { tables: allTables }, { new: true })
 				.populate("reservation");
 
+			const day = updatedSlot.date.toLocaleString("fr-FR").slice(0, 10);
+
 			res.status(200).json({
-				message: "Slot has been modified.",
-				reservation: neededTable,
+				successMessage: `Votre réservation du ${day} à ${updatedSlot.time} a bien été enregistrée.`,
 				slot: updatedSlot,
 			});
 		} else {
@@ -142,14 +142,9 @@ module.exports.get_reservations = async function (req, res, next) {
 				(reservation) => !!reservation.tables.length
 			);
 			if (bookedTables.length) res.status(200).json({ bookedTables });
-			else
-				return res
-					.status(401)
-					.json({ message: "Aucune réservation dans les 2 prochains mois." });
+			else res.status(401).json({ message: "Aucune réservation à venir." });
 		} else {
-			return res
-				.status(401)
-				.json({ message: "Aucune réservation dans les 2 prochains mois." });
+			res.status(401).json({ message: "Aucune réservation à venir." });
 		}
 	} catch (error) {
 		const errors = handleErrors(error);
@@ -186,9 +181,8 @@ module.exports.patch_cancelation = async function (req, res, next) {
 			.populate("reservation");
 
 		res.status(201).json({
-			message: `Table ${modifiedTables[ind].tableNum} : La réservation du ${day} à ${slot.time} a bien été annulée.`,
-			reservation: modifiedTables[ind],
-			modifiedSlot,
+			successMessage: `Table ${modifiedTables[ind].tableNum} : La réservation du ${day} à ${slot.time} a bien été annulée.`,
+			slot: modifiedSlot,
 		});
 	} catch (error) {
 		const errors = handleErrors(error);

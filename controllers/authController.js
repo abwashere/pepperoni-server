@@ -66,7 +66,7 @@ module.exports.post_signup = async (req, res) => {
 		// Save new user
 		const user = await userModel.create(newUser);
 		res.status(201).json({
-			successMessage: `${user.firstName} ${user.lastName} a bien été ajouté au staff.`,
+			successMessage: `${user.firstName} ${user.lastName} a bien été ajouté(e) au staff.`,
 		});
 	} catch (err) {
 		const errors = handleErrors(err);
