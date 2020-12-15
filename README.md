@@ -12,7 +12,7 @@ Set up those variables in a .env file before first running the scripts.
 
 - CLIENT_URL = http://localhost:3000
 
-- MONGODB_URL = mongodb+srv://<user>:<password>@cluster0.e3okn.mongodb.net/<dbname>?retryWrites=true&w=majority
+- MONGODB_URL = your-mongo-db-cluster-url
 
 - SESSION_SECRET = "your_secret_session_string"
 
