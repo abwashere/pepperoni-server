@@ -15,7 +15,7 @@ const handleErrors = (err) => {
 			"Pas de tables disponibles sur ce créneau. Choisissez une autre plage horaire ou une autre date.";
 	}
 	// something is missing
-	if (err.reason?.code === "ERR_ASSERTION") {
+	if (err.reason && err.reason.code === "ERR_ASSERTION") {
 		errors[err.path] = "Données non valides.";
 	}
 	if (err.message === "invalid clientName field") {
