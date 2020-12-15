@@ -8,7 +8,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
-const devMode = false; //FIXME:
+//FIXME: const devMode = false;
 
 const app = express();
 
@@ -35,13 +35,12 @@ app.use(
 		},
 	})
 );
-/* Dev mode */
+/* FIXME: Dev mode */
 if (devMode === true) app.use(require("./middlewares/devMode"));
 
 /* User in session tracking */
 app.use(function (req, res, next) {
 	console.log("=========Session user :", req.session.currentUser?.firstName);
-	// console.log("=========Session ID :", req.sessionID);
 	next();
 });
 
@@ -57,5 +56,11 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/food", foodRouter);
 app.use("/api/tables", tablesRouter);
+
+if (process.env.NODE_ENV === "production") {
+	app.use("*", (req, res, next) => {
+		res.sendFile(__dirname + "/public/index.html");
+	});
+}
 
 module.exports = app;

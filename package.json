@@ -7,7 +7,8 @@
     "dev": "nodemon ./bin/www",
     "db": "sudo service mongodb start",
     "tables": "node ./data/generateTables.js",
-    "seeds": "node ./data/generateSeeds.js"
+    "seeds": "node ./data/generateSeeds.js",
+    "build-react": "echo ---- creating react build --- && cd ../pepperoni-client && npm install && npm run build && cp -r ./build/* ../pepperoni-server/public/ && cd .."
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
@@ -18,7 +19,6 @@
     "dotenv": "^8.2.0",
     "express": "~4.16.1",
     "express-session": "^1.17.1",
-    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.16",
     "morgan": "~1.9.1",
     "validator": "^13.1.17"
