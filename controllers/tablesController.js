@@ -33,7 +33,7 @@ const handleErrors = (err) => {
 	}
 
 	// validation errors
-	if (err._message?.includes("validation failed")) {
+	if (err._message && err._message.includes("validation failed")) {
 		Object.values(err.errors).forEach(({ properties }) => {
 			errors[properties.path] = properties.message;
 		});

@@ -12,7 +12,7 @@ const handleErrors = (err) => {
 	}
 
 	// create food - validation errors
-	if (err._message?.includes("Food validation failed")) {
+	if (err._message && err._message.includes("Food validation failed")) {
 		Object.values(err.errors).forEach(({ properties }) => {
 			errors[properties.path] = properties.message;
 		});
