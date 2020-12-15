@@ -36,7 +36,7 @@ app.use(
 	})
 );
 /* FIXME: Dev mode */
-if (devMode === true) app.use(require("./middlewares/devMode"));
+// if (devMode === true) app.use(require("./middlewares/devMode"));
 
 /* User in session tracking */
 app.use(function (req, res, next) {
