@@ -1,24 +1,45 @@
-# Pepperoni App (Back-End)
+# Pepperoni app
+API
+
+## Description
+This app was created for training purposes.
+
+It is a fake restaurant website that is also used to make/edit reservations, change the menu, and add/edit staff members.
+
 
 ## Getting started
+This app has 2 repositories : [Api](https://github.com/abwashere/pepperoni-server),
+[Front](https://github.com/abwashere/pepperoni-client).
+
 
 ### 1. Install Dependencies
 
-### 2. Set Environment Variables
+Use npm to install packages.
+```bash
+cd pepperoni-server
+npm install
+```
 
-Set up those variables in a .env file before first running the scripts.
+### 2. Set Environment Variables - server side
 
-- PORT = your-backend-localhost-url
+Set up those variables in a **`.env`** file before first running the scripts.
 
-- CLIENT_URL = http://localhost:3000
+PORT = "your-backend-port"
 
-- MONGODB_URL = your-mongo-db-cluster-url
+CLIENT_URL = http://localhost:3000
 
-- SESSION_SECRET = "your_secret_session_string"
+MONGODB_URL = "your-mongo-db-cluster-url" 
+
+
+If you are part of the project : MONGODB_URL = "mongodb+srv://<username>:<password>@cluster0.ncc59.mongodb.net/pepperoni-db?retryWrites=true&w=majority"
+
+SESSION_SECRET = "some-random-string"
 
 ### 3. Launch Server
 
-#### `npm run dev`
+```bash
+npm run dev
+```
 
 ## Available Scripts
 
