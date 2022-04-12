@@ -19,7 +19,7 @@ const handleErrors = (err) => {
 		errors[err.path] = "Données non valides.";
 	}
 	if (err.message === "invalid clientName field") {
-		errors.clientName = "Veuillez renseigner un nom valide.";
+		errors.clientName = "Veuillez renseigner un nom valide (au moins 2 caractères).";
 	}
 	if (err.message === "missing clientPhone field") {
 		errors.clientPhone = "Veuillez renseigner un numéro de téléphone.";
