@@ -8,7 +8,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
-const devMode = true; // TODO: change as pleased in development
+const devMode = false; // TODO: change as pleased in development
 const app = express();
 
 /* Middlewares */
@@ -41,18 +41,20 @@ app.use(
 	})
 );
 
-if (devMode && process.env.NODE_ENV === "dev") {
-	app.use(require("./middlewares/devMode"));
-}
+if (process.env.NODE_ENV === "dev") {
+	if (devMode) app.use(require("./middlewares/devMode"));
 
-/* User in session tracking */
-app.use((req, res, next) => {
-	console.log(
-		"========= Session user :",
-		req.session ? req.session.currentUser.firstName : "No user connected"
-	);
-	next();
-});
+	/* User in session tracking */
+	app.use((req, res, next) => {
+		console.log(
+			"========= Session user :",
+			req.session
+				? req.session.currentUser.firstName
+				: "No user connected"
+		);
+		next();
+	});
+}
 
 /* Routing */
 const indexRouter = require("./routes/index");
@@ -73,11 +75,5 @@ app.use("/api/*", (req, res, next) => {
 	error.status = 404;
 	next(error);
 });
-
-if (process.env.NODE_ENV === "production") {
-	app.use("*", (req, res, next) => {
-		res.sendFile(__dirname + "/build/index.html");
-	});
-}
 
 module.exports = app;
