@@ -59,3 +59,17 @@ If you want to change tables content manually, do it in the tables.json file and
 
 Generates fake users, tables, and the restaurant menu, and saves them in your database.\
 The **npm run tables** command has to be run at least one time before.
+
+## Deployment
+
+1. Go to the client app and follow deployment instructions, then come back here.
+
+2. In the server folder : 
+
+Everytime you make **changes to your frontend** and want the new changes applied to the deployed version, you will have to rebuild the client, copy/paste the build and put it inside the public folder of the server : `npm run build`
+
+If you make any **changes to the backend** and want those changes to be applied on the deployed app, all you will have to do is :
+
+- commit your changes
+- push on Heroku (if you deploy on Heroku)
+- push on GitHub (always)
