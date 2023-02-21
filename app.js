@@ -8,15 +8,18 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
-//FIXME: const devMode = false;
-
+const devMode = true; // TODO: change as pleased in development
 const app = express();
 
 /* Middlewares */
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+if (process.env.NODE_ENV === "production") {
+	app.use(express.static(path.join(__dirname, "public/build")));
+} else {
+	app.use(express.static(path.join(__dirname, "public")));
+}
 app.use(cookieParser());
 app.use(
 	cors({
@@ -27,22 +30,26 @@ app.use(
 app.use(
 	session({
 		secret: process.env.SESSION_SECRET,
-		store: new MongoStore({ mongooseConnection: mongoose.connection }),
-		resave: false, // don't create session until something stored
+		store: new MongoStore({
+			mongooseConnection: mongoose.connection,
+		}),
+		resave: false, // don't create session until something is stored
 		saveUninitialized: false, //don't save session if unmodified
 		cookie: {
 			maxAge: 1000 * 60 * 30, // 30 min
 		},
 	})
 );
-/* FIXME: Dev mode */
-// if (devMode === true) app.use(require("./middlewares/devMode"));
+
+if (devMode && process.env.NODE_ENV === "dev") {
+	app.use(require("./middlewares/devMode"));
+}
 
 /* User in session tracking */
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
 	console.log(
-		"=========Session user :",
-		req.session.currentUser || "No user connected"
+		"========= Session user :",
+		req.session ? req.session.currentUser.firstName : "No user connected"
 	);
 	next();
 });
@@ -59,6 +66,13 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/food", foodRouter);
 app.use("/api/tables", tablesRouter);
+
+// 404 Middleware
+app.use("/api/*", (req, res, next) => {
+	const error = new Error("Ressource not found.");
+	error.status = 404;
+	next(error);
+});
 
 if (process.env.NODE_ENV === "production") {
 	app.use("*", (req, res, next) => {
