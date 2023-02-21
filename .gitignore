@@ -5,3 +5,5 @@ package-lock.json
 .env
 
 test-requests.http
+# Local Netlify folder
+.netlify
