@@ -1,0 +1,30 @@
+{
+  "files": {
+    "main.css": "/static/css/main.4b363ccc.chunk.css",
+    "main.js": "/static/js/main.19597348.chunk.js",
+    "main.js.map": "/static/js/main.19597348.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.7c5caff4.js",
+    "runtime-main.js.map": "/static/js/runtime-main.7c5caff4.js.map",
+    "static/css/2.d22f252f.chunk.css": "/static/css/2.d22f252f.chunk.css",
+    "static/js/2.129528d0.chunk.js": "/static/js/2.129528d0.chunk.js",
+    "static/js/2.129528d0.chunk.js.map": "/static/js/2.129528d0.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/2.d22f252f.chunk.css.map": "/static/css/2.d22f252f.chunk.css.map",
+    "static/css/main.4b363ccc.chunk.css.map": "/static/css/main.4b363ccc.chunk.css.map",
+    "static/js/2.129528d0.chunk.js.LICENSE.txt": "/static/js/2.129528d0.chunk.js.LICENSE.txt",
+    "static/media/App.sass": "/static/media/paper-texture.502eb8df.jpg",
+    "static/media/restau-1.59b7cdd1.jpg": "/static/media/restau-1.59b7cdd1.jpg",
+    "static/media/restau-2.0fa5b68f.jpg": "/static/media/restau-2.0fa5b68f.jpg",
+    "static/media/restau-3.fa53906b.jpg": "/static/media/restau-3.fa53906b.jpg",
+    "static/media/restau-4.33c6db4b.jpg": "/static/media/restau-4.33c6db4b.jpg",
+    "static/media/restau-5.1030acde.jpg": "/static/media/restau-5.1030acde.jpg",
+    "static/media/restau-6.12de278b.jpg": "/static/media/restau-6.12de278b.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.7c5caff4.js",
+    "static/css/2.d22f252f.chunk.css",
+    "static/js/2.129528d0.chunk.js",
+    "static/css/main.4b363ccc.chunk.css",
+    "static/js/main.19597348.chunk.js"
+  ]
+}
