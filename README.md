@@ -30,6 +30,9 @@ CLIENT_URL = http://localhost:3000
 
 MONGODB_URL = "your-mongo-db-cluster-url" 
 
+NODE_ENV = "dev" 
+or 
+NODE_ENV = "production" 
 
 If you are part of the project : MONGODB_URL = "mongodb+srv://<username>:<password>@cluster0.ncc59.mongodb.net/pepperoni-db?retryWrites=true&w=majority"
 
