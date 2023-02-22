@@ -1,4 +1,4 @@
-module.exports = function devMode(req, res, next) {
+module.exports = function adminMode(req, res, next) {
 	req.session.currentUser = {
 		_id: "admin123",
 		privileges: "admin",
