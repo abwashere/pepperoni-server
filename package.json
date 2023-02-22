@@ -7,8 +7,7 @@
     "dev": "nodemon ./bin/www",
     "db": "sudo service mongodb start",
     "tables": "node ./data/generateTables.js",
-    "seeds": "node ./data/generateSeeds.js",
-    "build-react": "echo ---- creating react build --- && cd ../pepperoni-client && npm install && npm run build && cp -r ./build/* ../pepperoni-server/build && cd .."
+    "seeds": "node ./data/generateSeeds.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
